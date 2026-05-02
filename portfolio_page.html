@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waypoint Retention Analytics | Luciano Casillas</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:      #003366;
+      --blue-700:  #0077B3;
+      --blue-500:  #3399CC;
+      --orange:    #E07B00;
+      --green:     #217A3C;
+      --steel-700: #607080;
+      --steel-300: #A0B4C8;
+      --steel-100: #EDF2F7;
+      --white:     #FFFFFF;
+      --text:      #1A2030;
+      --gap:       24px;
+      --radius:    6px;
+    }
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: #F4F6FA;
+      line-height: 1.6;
+    }
+
+    /* ---- Header ---- */
+    .hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 52px 40px 48px;
+    }
+    .hero-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--steel-300);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: var(--steel-300);
+      max-width: 700px;
+      margin-bottom: 28px;
+    }
+    .hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-block;
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-primary   { background: var(--blue-700); color: var(--white); }
+    .btn-secondary { background: transparent; color: var(--white); border: 1.5px solid var(--steel-300); }
+
+    /* ---- KPI strip ---- */
+    .kpi-strip {
+      background: var(--white);
+      border-bottom: 1px solid var(--steel-100);
+    }
+    .kpi-strip-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .kpi-card {
+      padding: 22px 28px;
+      border-right: 1px solid var(--steel-100);
+    }
+    .kpi-card:last-child { border-right: none; }
+    .kpi-label { font-size: 11px; color: var(--steel-700); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+    .kpi-value { font-size: 28px; font-weight: 700; color: var(--navy); }
+    .kpi-delta { font-size: 12px; color: var(--steel-700); margin-top: 4px; }
+
+    /* ---- Main content ---- */
+    .main { max-width: 960px; margin: 0 auto; padding: 40px 0 80px; }
+    h2.section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 2px solid var(--blue-700);
+      padding-bottom: 6px;
+      margin-bottom: 20px;
+      margin-top: 44px;
+    }
+    h2.section-title:first-child { margin-top: 0; }
+
+    /* ---- Finding cards ---- */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .card-icon {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .card h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .card p  { font-size: 13px; color: var(--steel-700); }
+    .stat-large { font-size: 26px; font-weight: 700; color: var(--blue-700); margin: 6px 0; }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .tag-blue   { background: var(--blue-700);  color: var(--white); }
+    .tag-orange { background: var(--orange);     color: var(--white); }
+    .tag-green  { background: var(--green);      color: var(--white); }
+    .tag-navy   { background: var(--navy);       color: var(--white); }
+
+    /* ---- Questions table ---- */
+    .q-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .q-table th {
+      background: var(--navy); color: var(--white);
+      padding: 9px 14px; text-align: left; font-weight: 600;
+    }
+    .q-table td { padding: 9px 14px; border-bottom: 0.5px solid var(--steel-100); }
+    .q-table tr:nth-child(even) td { background: var(--steel-100); }
+    .q-table .q-id { font-weight: 700; color: var(--blue-700); }
+
+    /* ---- Stack ---- */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+    }
+    .stack-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .stack-card h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--steel-700); margin-bottom: 10px; }
+    .stack-card ul { list-style: none; padding: 0; }
+    .stack-card li { font-size: 13px; padding: 3px 0; color: var(--text); }
+    .stack-card li::before { content: "- "; color: var(--blue-700); font-weight: 700; }
+
+    /* ---- Tabs preview ---- */
+    .tab-list { display: flex; flex-direction: column; gap: 8px; }
+    .tab-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--white);
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .tab-num {
+      width: 28px; height: 28px; min-width: 28px;
+      background: var(--blue-700); color: var(--white);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .tab-row h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .tab-row p  { font-size: 12px; color: var(--steel-700); }
+
+    /* ---- About strip ---- */
+    .about-strip {
+      background: var(--navy);
+      color: var(--white);
+      padding: 32px 40px;
+      margin-top: 60px;
+    }
+    .about-inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .about-text h3 { font-size: 17px; margin-bottom: 6px; }
+    .about-text p  { font-size: 13px; color: var(--steel-300); max-width: 560px; }
+    .about-links { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 680px) {
+      .kpi-strip-inner { grid-template-columns: 1fr 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+      .stack-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================ HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Portfolio Project | Insurance Analytics | Data Analyst II</div>
+    <h1>Waypoint Property &amp; Casualty<br>Retention Analytics</h1>
+    <p>
+      Analyzes 90,000 synthetic auto and renters insurance policies to predict first-year
+      lapse risk, identify a $7.8M+ cross-sell gap, and rank policyholders by attrition
+      risk using a gradient boosting model with SHAP attribution.
+    </p>
+    <div class="hero-buttons">
+      <a href="#" class="btn btn-primary">Live Dashboard (Streamlit)</a>
+      <a href="https://github.com/luciano-casillas/waypoint-retention-analytics" class="btn btn-secondary">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ KPI STRIP -->
+<div class="kpi-strip">
+  <div class="kpi-strip-inner">
+    <div class="kpi-card">
+      <div class="kpi-label">12-Month Renewal Rate</div>
+      <div class="kpi-value">74.8%</div>
+      <div class="kpi-delta">Across 60,081 labeled policies</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">AQX vs. Direct Web Gap</div>
+      <div class="kpi-value">+14pp</div>
+      <div class="kpi-delta">82% AQX vs. 68% Direct Web renewal</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cross-Sell Opportunity</div>
+      <div class="kpi-value">$7.8M</div>
+      <div class="kpi-delta">Unattached quoted renters premium</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Model Lift (Top Decile)</div>
+      <div class="kpi-value">1.59x</div>
+      <div class="kpi-delta">40% lapse rate vs. 25% book average</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ MAIN -->
+<div style="padding: 0 40px;">
+<div class="main">
+
+  <!-- Key Findings -->
+  <h2 class="section-title">Key Findings</h2>
+  <div class="card-grid">
+
+    <div class="card">
+      <span class="tag tag-blue">Channel Quality</span>
+      <div class="stat-large">+14pp</div>
+      <h3>AQX Digital Channel Advantage</h3>
+      <p>Policies acquired through the AQX digital quoting platform renew at 82%
+         vs. 68% for Direct Web. The gap holds across all cohort quarters since
+         AQX launched in 2023Q3, suggesting structural customer quality differences
+         rather than seasonal variation.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-orange">Cross-Sell Gap</span>
+      <div class="stat-large">28,000+</div>
+      <h3>Quoted but Not Attached for Renters</h3>
+      <p>Over 28,000 policyholders were offered renters insurance at quote and
+         declined. At the $280/yr average renters premium, this represents $7.8M
+         in unrealized annual revenue -- the single largest near-term
+         revenue opportunity identified.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-green">Model Output</span>
+      <div class="stat-large">1.59x</div>
+      <h3>Top Decile Lapse Lift</h3>
+      <p>The XGBoost gradient boosting model scores all 90,000 policies by lapse
+         probability. The top decile shows a 40% actual lapse rate vs. 25.2% for
+         the full book -- a 1.59x lift enabling cost-effective outreach
+         prioritization before the 60-day renewal window.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag tag-navy">Billing Signal</span>
+      <div class="stat-large">#2 SHAP</div>
+      <h3>Payment Consistency Predicts Lapse</h3>
+      <p>Payment consistency score is the second-strongest SHAP predictor of
+         lapse (behind acquisition channel). Policies with missed payments or NSF
+         events show materially lower renewal rates, enabling a rules-based
+         lapse alert deployable without a model serving layer.</p>
+    </div>
+
+  </div>
+
+  <!-- Business Questions -->
+  <h2 class="section-title">Business Questions Answered</h2>
+  <table class="q-table">
+    <thead>
+      <tr>
+        <th style="width:48px;">ID</th>
+        <th>Question</th>
+        <th style="width:160px;">Primary Skill</th>
+        <th style="width:120px;">Dashboard Tab</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="q-id">Q01</td>
+        <td>Which acquisition cohorts show the steepest first-year attrition?</td>
+        <td>SQL (window functions, cohort ladder)</td>
+        <td>Retention Overview</td>
+      </tr>
+      <tr>
+        <td class="q-id">Q02</td>
+        <td>Which characteristics predict non-renewal at 12 months?</td>
+        <td>Python (XGBoost, SHAP)</td>
+        <td>Predictive Model</td>
+      </tr>
+      <tr>
+        <td class="q-id">Q04</td>
+        <td>How does 36-month CLTV vary by channel and coverage tier?</td>
+        <td>SQL (CLTV segmentation)</td>
+        <td>Channel and Value</td>
+      </tr>
+      <tr>
+        <td class="q-id">Q05</td>
+        <td>Which billing behaviors correlate most strongly with early lapse?</td>
+        <td>SQL + Python (risk scoring)</td>
+        <td>Predictive Model</td>
+      </tr>
+      <tr>
+        <td class="q-id">Q07</td>
+        <td>Does the AQX channel produce higher-quality, better-retained customers?</td>
+        <td>SQL (cohort comparison)</td>
+        <td>Channel and Value</td>
+      </tr>
+      <tr>
+        <td class="q-id">Q09</td>
+        <td>What is the relationship between claims history and renewal behavior?</td>
+        <td>SQL (multi-table joins)</td>
+        <td>Retention Overview</td>
+      </tr>
+      <tr>
+        <td class="q-id">Q10</td>
+        <td>Where does the auto-to-renters cross-sell funnel drop off?</td>
+        <td>SQL (funnel aggregation)</td>
+        <td>Cross-Sell Funnel</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Dashboard -->
+  <h2 class="section-title">Dashboard: 7 Tabs</h2>
+  <div class="tab-list">
+    <div class="tab-row">
+      <div class="tab-num">1</div>
+      <div>
+        <h4>Retention Overview</h4>
+        <p>HTML cohort retention heatmap (months 1-12 by cohort quarter), renewal trend line with slope overlay, claims severity bar, dual-axis claim payout vs. renewal rate chart.</p>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-num">2</div>
+      <div>
+        <h4>Channel and Value</h4>
+        <p>Renewal rate and CLTV by acquisition channel (paired bars), AQX vs. non-AQX cohort trend with launch marker, CLTV by coverage tier, agency type and tenure grouped bar.</p>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-num">3</div>
+      <div>
+        <h4>Predictive Model</h4>
+        <p>Lift by lapse propensity decile, cumulative gain curve, SHAP horizontal bar (top 12 features), confusion matrix (NAVY/RED_SOFT), CSS lapse risk score histogram, at-risk profile explorer with radio-driven metric tiles.</p>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-num">4</div>
+      <div>
+        <h4>Cross-Sell Funnel</h4>
+        <p>CSS div funnel (bar widths = % of Stage 1 population), renters cross-sell rate by agency type and customer tenure band.</p>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-num">5</div>
+      <div>
+        <h4>Financial Impact</h4>
+        <p>Two-slider interactive simulator (renewal rate lift + renters attach rate lift). Green results card with revenue projections. Reactive downstream charts: additional policies by channel, CLTV stacked bar by coverage tier.</p>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-num">6</div>
+      <div>
+        <h4>Recommendations</h4>
+        <p>Three-tier action plan (Immediate 0-30 days, Short-Term 30-90 days, Strategic 90+ days), two recommendation cards per tier with estimated revenue impact and implementation notes.</p>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab-num">7</div>
+      <div>
+        <h4>Healthcare Application</h4>
+        <p>8-row signal translation table mapping insurance retention signals to healthcare analogues (patient retention, readmission prevention). Three lever cards and a portability explanation strip.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <h2 class="section-title">Tech Stack</h2>
+  <div class="stack-grid">
+    <div class="stack-card">
+      <h4>Data</h4>
+      <ul>
+        <li>Python 3.12</li>
+        <li>NumPy, Pandas</li>
+        <li>PyYAML</li>
+        <li>UUID (5 source tables)</li>
+        <li>90,000 rows | seed 42</li>
+      </ul>
+    </div>
+    <div class="stack-card">
+      <h4>SQL Analysis</h4>
+      <ul>
+        <li>Snowflake ANSI SQL</li>
+        <li>7 production queries</li>
+        <li>Window functions</li>
+        <li>GENERATOR row spine</li>
+        <li>NTILE decile scoring</li>
+      </ul>
+    </div>
+    <div class="stack-card">
+      <h4>Modeling</h4>
+      <ul>
+        <li>XGBoost 3.2</li>
+        <li>SHAP 0.51 (TreeExplainer)</li>
+        <li>scikit-learn 1.8</li>
+        <li>OrdinalEncoder (29 features)</li>
+        <li>ROC-AUC: 0.61</li>
+      </ul>
+    </div>
+    <div class="stack-card">
+      <h4>Dashboard</h4>
+      <ul>
+        <li>Streamlit</li>
+        <li>Plotly Graph Objects</li>
+        <li>Custom HTML/CSS charts</li>
+        <li>7 tabs | 1,168 lines</li>
+        <li>KPI header with sparklines</li>
+      </ul>
+    </div>
+    <div class="stack-card">
+      <h4>Data Design</h4>
+      <ul>
+        <li>5 normalized source tables</li>
+        <li>Denormalized CSV at policy grain</li>
+        <li>Mermaid ERD</li>
+        <li>Data dictionary (39 columns)</li>
+        <li>Leakage documentation</li>
+      </ul>
+    </div>
+    <div class="stack-card">
+      <h4>Environment</h4>
+      <ul>
+        <li>Python 3.12 (Windows)</li>
+        <li>Jupyter Lab</li>
+        <li>VS Code + Pylance</li>
+        <li>nbformat (notebook gen)</li>
+        <li>Git / GitHub</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ================================================================ ABOUT STRIP -->
+<div class="about-strip">
+  <div class="about-inner">
+    <div class="about-text">
+      <h3>Luciano Casillas | Data Analyst</h3>
+      <p>Senior Data Analyst with a background in SQL, Python, and Streamlit.
+         This project was built during a job search targeting Data Analyst II
+         roles in insurance and adjacent industries. Available for full-time roles.</p>
+    </div>
+    <div class="about-links">
+      <a href="https://github.com/luciano-casillas/waypoint-retention-analytics" class="btn btn-secondary">GitHub</a>
+      <a href="https://linkedin.com/in/luciano-casillas" class="btn btn-secondary">LinkedIn</a>
+      <a href="mailto:luciano.casillasjr@outlook.com" class="btn btn-primary">Contact</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

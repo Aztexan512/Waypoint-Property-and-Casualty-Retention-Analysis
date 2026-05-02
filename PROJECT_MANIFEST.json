@@ -1,0 +1,255 @@
+{
+  "project_name": "waypoint-retention-analytics",
+  "repo_name": "waypoint-retention-analytics",
+  "local_path": "C:\\Users\\lucia\\OneDrive\\Portfolio Projects\\waypoint-retention-analytics",
+  "fictional_company": "Waypoint Property & Casualty",
+  "fictional_company_description": "A regional direct-to-consumer auto and renters insurer operating across 14 states with approximately 290,000 active policies and $380M in written premium, growing its agency channel through a new digital quoting platform.",
+  "analyst_frame": "As the data analyst II at Waypoint Property & Casualty, I have been asked to analyze policyholder retention behavior and household lifetime value to identify at-risk renewal segments and quantify the revenue impact of the multi-product attachment and digital channel acquisition gaps.",
+  "industry": "Personal Lines Insurance (Auto and Renters)",
+  "role_target": "Data Analyst II -- Direct Agency Advancement",
+  "company_target": "Progressive Insurance",
+  "archetype": "Custom (Hybrid A/B)",
+  "archetype_rationale": "Q01 and Q07 are time-series and cohort-based (Archetype B); Q02 and Q05 require binary classification with SHAP (Archetype A); Q04 and Q10 are financial and funnel-diagnostic. A pure archetype misses the retention lifecycle story.",
+  "approved_business_questions": [
+    {
+      "id": "Q01",
+      "question": "What do first-year renewal rates look like across policy cohorts by acquisition quarter, and which cohorts show the steepest attrition before the 12-month mark?",
+      "tab": "Tab 1 -- Retention Overview",
+      "approach": "Descriptive (cohort retention analysis)",
+      "primary_skill": "SQL (window functions, cohort retention ladders)"
+    },
+    {
+      "id": "Q02",
+      "question": "Which policyholder characteristics are most predictive of non-renewal at 12 months, and how early in the policy term can a lapse be predicted?",
+      "tab": "Tab 3 -- Predictive Model",
+      "approach": "Predictive",
+      "primary_skill": "Python (gradient boosting, SHAP), SQL (behavioral feature engineering)"
+    },
+    {
+      "id": "Q04",
+      "question": "How does policyholder lifetime value vary by acquisition channel and coverage tier, and which segments generate the most revenue per policy over a 36-month window?",
+      "tab": "Tab 2 -- Channel and Value",
+      "approach": "Descriptive + Prescriptive",
+      "primary_skill": "SQL (CLTV calculation), Python (visualization)"
+    },
+    {
+      "id": "Q05",
+      "question": "Which billing and payment behaviors correlate most strongly with early lapse, and can a lapse warning score be built from them?",
+      "tab": "Tab 3 -- Predictive Model",
+      "approach": "Predictive + Diagnostic",
+      "primary_skill": "Python (classification, SHAP), SQL (behavioral feature engineering)"
+    },
+    {
+      "id": "Q07",
+      "question": "Do policyholders acquired through the digital quoting channel show different first-year retention curves than those acquired through traditional agency channels?",
+      "tab": "Tab 2 -- Channel and Value",
+      "approach": "Diagnostic",
+      "primary_skill": "SQL (cohort comparison), Python (visualization)"
+    },
+    {
+      "id": "Q09",
+      "question": "What is the relationship between claims history and renewal behavior, and does it differ by coverage tier and acquisition channel?",
+      "tab": "Tab 1 -- Retention Overview",
+      "approach": "Diagnostic",
+      "primary_skill": "SQL (multi-table joins, conditional aggregation)"
+    },
+    {
+      "id": "Q10",
+      "question": "What is the auto-to-renters cross-sell conversion rate by agency type and customer tenure band, and where does the cross-sell funnel drop off?",
+      "tab": "Tab 4 -- Cross-Sell Funnel",
+      "approach": "Diagnostic",
+      "primary_skill": "SQL (funnel stage aggregation), Python (visualization)"
+    }
+  ],
+  "dataset": {
+    "row_count": 90000,
+    "time_window_months": 36,
+    "time_window_start": "2023-01-01",
+    "time_window_end": "2025-12-31",
+    "seed": 42,
+    "target_column": "renewed",
+    "target_definition": "1 = policy renewed at 12 months, 0 = lapsed or cancelled",
+    "renewal_window_note": "Target applies to policies effective on or before 2024-12-31 (~72,000 policies with known renewal outcome)",
+    "source_tables": [
+      {
+        "name": "dim_customer",
+        "grain": "One row per policyholder account",
+        "approx_rows": 72000,
+        "key_columns": ["customer_id", "age_band", "state", "metro_area", "homeowner_flag", "prior_insurance_flag", "years_with_carrier", "acquisition_channel", "agency_type", "aqx_assisted_flag"]
+      },
+      {
+        "name": "fact_policies",
+        "grain": "One row per issued policy",
+        "approx_rows": 90000,
+        "key_columns": ["policy_id", "customer_id", "policy_type", "coverage_tier", "annual_premium", "effective_date", "cohort_quarter", "tenure_months", "multi_product_flag", "renters_quoted_flag", "renters_attached_flag", "renewed"]
+      },
+      {
+        "name": "fact_renewals",
+        "grain": "One row per 12-month renewal event",
+        "approx_rows": 72000,
+        "key_columns": ["renewal_id", "policy_id", "customer_id", "renewal_decision_date", "renewed", "days_to_decision", "renewal_premium_change_pct", "outreach_contact_flag", "renewal_month_label"]
+      },
+      {
+        "name": "fact_billing_summary",
+        "grain": "One row per policy (billing behavior summary over term)",
+        "approx_rows": 90000,
+        "key_columns": ["policy_id", "payment_method", "billing_frequency", "missed_payment_count_12mo", "days_past_due_max", "payment_consistency_score", "nsf_flag", "late_pay_flag_last_3mo"]
+      },
+      {
+        "name": "fact_claims",
+        "grain": "One row per claim filed",
+        "approx_rows": 19000,
+        "key_columns": ["claim_id", "policy_id", "customer_id", "claim_date", "claim_type", "claim_amount", "claim_severity_band", "at_fault_flag", "claim_status", "days_to_close"]
+      }
+    ],
+    "leakage_columns": [
+      {
+        "column": "cltv_36mo",
+        "risk": "HIGH",
+        "reason": "Derived from full 36-month policy outcome. Not available at renewal time."
+      },
+      {
+        "column": "renewal_premium_change_pct",
+        "risk": "HIGH",
+        "reason": "Only known after renewal decision is made."
+      },
+      {
+        "column": "post_renewal_coverage_tier",
+        "risk": "HIGH",
+        "reason": "Only known after renewal decision is made."
+      },
+      {
+        "column": "outreach_contact_flag",
+        "risk": "CONDITIONAL",
+        "reason": "Legitimate feature ONLY if used with strict date guard ensuring contact occurred before renewal decision."
+      }
+    ]
+  },
+  "dashboard": {
+    "title": "Waypoint Property and Casualty | Retention Analytics",
+    "subtitle": "Auto and Renters Policyholder Renewal | 2023-2025 | 90,000 Policies",
+    "primary_app": "app.py",
+    "benchmarking_app": null,
+    "tabs": [
+      {
+        "order": 1,
+        "name": "Retention Overview",
+        "business_questions": ["Q01", "Q09"],
+        "layout": "Full-width cohort heatmap, paired cohort line + severity bar, full-width dual-axis",
+        "charts": ["Cohort Retention Heatmap (HTML table)", "12-Month Renewal Rate by Cohort Quarter (line)", "Renewal Rate by Claims Severity Band (bar)", "Renewal Rate vs. Claim Payout Amount (dual-axis)"]
+      },
+      {
+        "order": 2,
+        "name": "Channel and Value",
+        "business_questions": ["Q07", "Q04"],
+        "layout": "Paired bars, full-width dual-axis trend, paired bars",
+        "charts": ["12-Month Renewal Rate by Acquisition Channel (bar)", "Average 36-Month CLTV by Acquisition Channel (bar)", "AQX vs. Non-AQX Renewal Rate Over Time (dual-axis line)", "Average 36-Month CLTV by Coverage Tier (bar)", "Renewal Rate by Agency Type and Tenure Band (grouped bar)"]
+      },
+      {
+        "order": 3,
+        "name": "Predictive Model",
+        "business_questions": ["Q02", "Q05"],
+        "layout": "Paired lift + gain, paired SHAP + confusion matrix, paired CSS histogram + tiles",
+        "charts": ["Lift by Lapse Propensity Decile (bar)", "Cumulative Gain Curve (line with fill)", "SHAP Feature Importance (horizontal bar)", "Confusion Matrix (4-cell discrete)", "Lapse Risk Score Distribution (CSS histogram)", "At-Risk Policyholder Profile Explorer (metric tiles + radio)"]
+      },
+      {
+        "order": 4,
+        "name": "Cross-Sell Funnel",
+        "business_questions": ["Q10"],
+        "layout": "Full-width CSS funnel + narrative, paired conversion bars",
+        "charts": ["Renters Attachment Funnel (CSS)", "Renters Cross-Sell Rate by Agency Type (bar)", "Renters Cross-Sell Rate by Customer Tenure Band (bar)"]
+      },
+      {
+        "order": 5,
+        "name": "Financial Impact",
+        "business_questions": ["Q04"],
+        "layout": "Two-slider simulator + results card + scenario bar, reactive paired charts below",
+        "charts": ["Renewal Rate Simulator (two sliders + results card)", "Net CLTV Uplift by Scenario (bar)", "Additional Renewing Policies by Channel (reactive bar)", "Current vs. Projected CLTV by Coverage Tier (reactive stacked bar)"]
+      },
+      {
+        "order": 6,
+        "name": "Recommendations",
+        "business_questions": ["Q01-Q10"],
+        "layout": "Context paragraph, three tiered sections, two cards per tier",
+        "charts": []
+      },
+      {
+        "order": 7,
+        "name": "Healthcare Application",
+        "business_questions": ["Cross-industry translation"],
+        "layout": "Two-column: translation table left, lever cards right, portability strip below",
+        "charts": ["Signal Translation Table (dk-table)", "Three Lever Cards", "Portability Strip (NAVY background)"]
+      }
+    ],
+    "kpi_header": [
+      {"metric": "12-Month Renewal Rate", "sparkline_over": "cohort_quarter"},
+      {"metric": "Multi-Product Attach Rate", "sparkline_over": "cohort_quarter"},
+      {"metric": "Avg 36-Month CLTV", "sparkline_over": "cohort_quarter"},
+      {"metric": "% Policyholders High-Risk", "sparkline_over": "cohort_quarter"}
+    ],
+    "sidebar_filters": [
+      {"name": "channel_sel", "type": "multiselect", "label": "Acquisition Channel", "values": ["Agency Portal", "AQX", "Direct Web", "Phone", "Referral"]},
+      {"name": "coverage_tier_sel", "type": "multiselect", "label": "Coverage Tier", "values": ["Liability Only", "Standard", "Premium", "Elite"]},
+      {"name": "policy_type_sel", "type": "multiselect", "label": "Policy Type", "values": ["Auto Only", "Auto + Renters"]},
+      {"name": "tenure_range", "type": "slider", "label": "Customer Tenure (Months)", "min": 0, "max": 48},
+      {"name": "state_sel", "type": "multiselect", "label": "State", "values": ["all 14 states"]}
+    ]
+  },
+  "github_files": {
+    "primary_csv": "data/waypoint_retention.csv",
+    "data_dictionary": "data/data_dictionary.md",
+    "erd": "data/schema/erd.md",
+    "table_definitions": "data/schema/table_definitions.md",
+    "sql_file": "sql/waypoint_retention_analysis.sql",
+    "notebook": "notebooks/waypoint_retention_analysis.ipynb",
+    "primary_app": "app.py",
+    "benchmarking_app": null,
+    "requirements": "requirements.txt",
+    "config": ".streamlit/config.toml",
+    "readme": "README.md",
+    "project_overview": "docs/PROJECT_OVERVIEW.md",
+    "portfolio_page": "portfolio_page.html"
+  },
+  "gitignore_paths": [
+    "_build/",
+    "docs/INTERVIEW_PREP.md",
+    "__pycache__/",
+    "*.pyc",
+    "*.pyo",
+    ".DS_Store",
+    ".env",
+    ".vscode/",
+    "*.log",
+    ".streamlit/secrets.toml"
+  ],
+  "streamlit_urls": {
+    "primary": "PLACEHOLDER -- add after deployment",
+    "benchmarking": null
+  },
+  "github_settings": {
+    "description": "Analyzes 90,000 synthetic insurance policies to predict first-year lapse risk, identify a $7.8M cross-sell gap, and map the auto-to-renters funnel across agency segments, achieving 1.59x lift in the top lapse-risk decile with XGBoost and SHAP.",
+    "suggested_description": "Analyzes 90,000 synthetic insurance policies to predict first-year lapse risk, identify a $7.8M cross-sell gap, and map the auto-to-renters funnel across agency segments, achieving 1.59x lift in the top lapse-risk decile with XGBoost and SHAP.",
+    "topics": ["python", "streamlit", "sql", "machine-learning", "insurance-analytics"],
+    "visibility": "public",
+    "display_name": "Luciano Casillas"
+  },
+  "pattern_log": "PATTERN_LOG.md",
+  "mockup_version": "v2",
+  "mockup_file": "waypoint_retention_analytics_mockup_v2.html",
+  "gates_completed": {
+    "gate_1": "2026-05-02",
+    "gate_2": "2026-05-02",
+    "gate_3_spec": "2026-05-02",
+    "gate_3_mockup": "2026-05-02",
+    "gate_3_approved": "2026-05-02"
+  },
+  "phase_status": {
+    "phase_1_data_model": "complete",
+    "phase_2_data_generation": "complete",
+    "phase_3_sql_analysis": "complete",
+    "phase_4_notebook_modeling": "complete",
+    "phase_5_dashboard": "complete",
+    "phase_6_documentation": "complete",
+    "phase_7_git_init": "complete"
+  }
+}

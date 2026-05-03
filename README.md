@@ -14,7 +14,7 @@ Analyzes 60,081 synthetic auto and renters insurance policies to identify a **$5
 
 ## 📋 Table of Contents
 
-- [Project Background](#-project-background)
+- [Project Background](#-project-background)h
 - [Executive Summary](#-executive-summary)
 - [Insights Deep Dive](#-insights-deep-dive)
 - [Recommendations](#-recommendations)
@@ -56,7 +56,7 @@ Policyholders with billing distress lapse at 36% vs. 23% for those with clean bi
 
 <!-- SCREENSHOT REQUIRED: screenshots/overview.png -->
 <!-- Capture: Retention Overview tab -- 100% stacked bar pair (Billing Behavior left, Claims Severity right), both charts visible -->
-[Retention Overview](screenshots/Renewed_vs._Lapsed_by_Billing_Behavior.png)
+![Renewed vs. Lapsed by Billing Behavior](screenshots/Renewed%20vs.%20Lapsed%20by%20Billing%20Behavior.png)![Renewed vs. Lapsed by Claims Severity](screenshots/Renewed%20vs.%20Lapsed%20by%20Claims%20Severity.png)
 
 ### 2. The AQX Channel Produces a Structural Quality Advantage
 
@@ -64,7 +64,7 @@ AQX-assisted policyholders carry $1,906 in average 36-month Customer Lifetime Va
 
 <!-- SCREENSHOT REQUIRED: screenshots/channel_value.png -->
 <!-- Capture: Channel and Value tab -- AQX vs. Non-AQX trend line chart and CLTV by channel bar chart visible -->
-![Channel and Value](screenshots/channel_value.png)
+![AQX vs. Non-AQX Renewal Rate by Cohort Quarter](screenshots/AQX%20vs.%20Non-AQX%20Renewal%20Rate%20by%20Cohort%20Quarter.png)![Avg 36-Month CLTV by Acquisition Channel](screenshots/Avg%2036-Month%20CLTV%20by%20Acquisition%20Channel.png)
 
 ### 3. A 43% Offer-Rate Gap Drives the Renters Cross-Sell Opportunity
 
@@ -72,7 +72,8 @@ The renters attachment funnel drops at the offer stage, not the close stage. Of 
 
 <!-- SCREENSHOT REQUIRED: screenshots/crosssell_funnel.png -->
 <!-- Capture: Cross-Sell Funnel tab -- CSS funnel and both cross-sell bar charts visible -->
-![Cross-Sell Funnel](screenshots/crosssell_funnel.png)
+![Renters Attachment Funnel](screenshots/Renters%20Attahchment%20Funnel.png)![Renters Cross-Sell Rate by Agency Type](screenshots/Renters%20Cross-Sell%20Rate%20by%20Agency%20Type.png)
+![Renters Cross-Sell Rate by Tenure Band](screenshots/Renters%20Cross-Sell%20Rate%20by%20Tenure%20Band.png)
 
 ### 4. The Lapse Prediction Model Enables Cost-Effective Targeted Outreach
 
@@ -80,7 +81,7 @@ The gradient boosting model identifies the top-risk 10% of policyholders at 1.59
 
 <!-- SCREENSHOT REQUIRED: screenshots/predictive_model.png -->
 <!-- Capture: Predictive Model tab -- Lift chart (left) and SHAP Feature Importance (right) both visible -->
-![Predictive Model](screenshots/predictive_model.png)
+![Lift by Lapse Propensity Decile](screenshots/Lift%20by%20Lapse%20Propensity%20Decile.png)![SHAP Feature Importance](screenshots/SHAP%20Feature%20Importance.png)
 
 ---
 

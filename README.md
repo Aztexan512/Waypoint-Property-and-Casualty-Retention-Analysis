@@ -56,7 +56,7 @@ Policyholders with billing distress lapse at 36% vs. 23% for those with clean bi
 
 <!-- SCREENSHOT REQUIRED: screenshots/overview.png -->
 <!-- Capture: Retention Overview tab -- 100% stacked bar pair (Billing Behavior left, Claims Severity right), both charts visible -->
-![Retention Overview](screenshots/overview.png)
+![Retention Overview](screenshots/Renewed_vs._Lapsed_by_Billing_Behavior.png)
 
 ### 2. The AQX Channel Produces a Structural Quality Advantage
 

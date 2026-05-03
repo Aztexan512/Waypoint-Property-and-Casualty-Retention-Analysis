@@ -8,7 +8,7 @@
 ![Plotly](https://img.shields.io/badge/Plotly-Visualization-3F4F75)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626)
 
-Analyzes 60,081 synthetic auto and renters insurance policies to identify a **$5.4M renters cross-sell opportunity**, quantify an **8.8pp AQX channel retention premium**, and predict first-year policyholder lapse risk with a gradient boosting model achieving **1.59x lift** in the top risk decile.
+Analyzes 60,081 auto and renters insurance policies to identify a **$5.4M renters cross-sell opportunity**, quantify an **8.8pp AQX channel retention premium**, and predict first-year policyholder lapse risk with a gradient boosting model achieving **1.59x lift** in the top risk decile.
 
 ---
 

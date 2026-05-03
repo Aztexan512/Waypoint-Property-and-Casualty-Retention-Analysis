@@ -14,7 +14,7 @@ Analyzes 60,081 synthetic auto and renters insurance policies to identify a **$5
 
 ## 📋 Table of Contents
 
-- [Project Background](#-project-background)h
+- [Project Background](#-project-background)
 - [Executive Summary](#-executive-summary)
 - [Insights Deep Dive](#-insights-deep-dive)
 - [Recommendations](#-recommendations)

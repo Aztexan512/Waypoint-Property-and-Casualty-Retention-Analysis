@@ -178,7 +178,7 @@ streamlit run app.py
 
 | Dashboard | Link |
 |---|---|
-| Waypoint P&C Retention Explorer | [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](PLACEHOLDER) |
+| Waypoint P&C Retention Explorer | [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gtfycfxmeyq6tn6p85q7app.streamlit.app/) |
 
 <!-- STREAMLIT URL REQUIRED: Replace PLACEHOLDER with deployed app URL after Streamlit Community Cloud deployment -->
 

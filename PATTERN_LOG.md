@@ -6,6 +6,31 @@
 
 ---
 
+## Session Anti-Patterns (2026-05-02 Build Session)
+
+These mistakes were caught during this session and added to
+portfolio_production_standard.md Section 29. Listed here for
+quick reference when resuming this project.
+
+| Rule | Section 29 ref |
+|------|----------------|
+| Em dash check must run after every edit, not just at commit | 29.1 |
+| Individual captions per chart, never combined "Left/Right" strips | 29.2 |
+| Key Findings must contain a specific number, a comparison, and an action | 29.3 |
+| Remove duplicate charts before adding new ones covering the same story | 29.4 |
+| Never fabricate data for visualization (cohort months 1-11 were hardcoded 98%) | 29.5 |
+| All grouped bar traces need explicit marker_color from palette | 29.6 |
+| SHAP horizontal bar: ascending sort, no autorange reversal | 29.7 |
+| Slider range must match actual data max, not assumed range | 29.8 |
+| CSS Grid KPI items need min-width:0 to prevent Plotly blowout | 29.9 |
+| base_layout margin.l default is 62, not 16 | 29.10 |
+| CSS funnel bar width = % of original population, never stage-to-stage | 29.11 |
+| Use "No Claims" not "None" as null sentinel in CSVs | 29.12 |
+| Sync root app.py to _build path after every edit | 29.13 |
+| Verify all Key Finding numbers against generated data, not mockup placeholders | 29.14 |
+
+---
+
 ## How to Use This File
 
 Drop this file into a new Claude conversation alongside other PATTERN_LOG.md

@@ -8,7 +8,7 @@ Generates all five source tables and the denormalized analysis-ready CSV:
   - fact_billing_summary.csv  (90,000 rows)
   - fact_claims.csv           (~19,000 rows)
   - fact_renewals.csv         (~72,000 rows)
-  - waypoint_retention.csv    (90,000 rows, denormalized)
+  - waypoint_retention.csv    (~60,000 rows, denormalized, known-renewal policies only)
   - waypoint_retention_metadata.json
 
 Usage (from project root):
@@ -755,7 +755,10 @@ def build_denormalized(
     df["has_claim_12mo"]        = df["has_claim_12mo"].fillna(0).astype(int)
     df["claim_count_12mo"]      = df["claim_count_12mo"].fillna(0).astype(int)
     df["total_claim_amount"]    = df["total_claim_amount"].fillna(0.0).round(2)
-    df["claim_severity_band"]   = df["claim_severity_band"].fillna("None")
+    df["claim_severity_band"]   = df["claim_severity_band"].fillna("No Claims")
+    # DESIGN DECISION: "No Claims" is used instead of "None" because pandas
+    # treats the string "None" as a null value when reading CSV files back in,
+    # which would reintroduce nulls and fail the quality gate.
     df["days_since_last_claim"] = df["days_since_last_claim"].fillna(-1).astype(int)
 
     # Merge renewal metadata
@@ -943,8 +946,12 @@ def main() -> None:
         save_csv(df, RAW_DIR / f"{name}.csv", name)
         save_csv(df, OUT_DIR / f"{name}.csv", name)
 
-    # Denormalized CSV and metadata -> outputs/ only
-    save_csv(denorm, OUT_DIR / "waypoint_retention.csv", "waypoint_retention")
+    # Denormalized CSV: filter to policies with known renewal outcome (0 or 1).
+    # Rows with renewed == -1 are in-term policies whose 12-month window has not
+    # closed yet. They are excluded from the committed analysis dataset so the
+    # target column stays binary and the quality gate passes.
+    denorm_clean = denorm[denorm["renewed"].isin([0, 1])].reset_index(drop=True)
+    save_csv(denorm_clean, OUT_DIR / "waypoint_retention.csv", "waypoint_retention")
 
     metadata = build_metadata(cfg, customers, policies_out, billing, claims, renewals, denorm)
     meta_path = OUT_DIR / "waypoint_retention_metadata.json"

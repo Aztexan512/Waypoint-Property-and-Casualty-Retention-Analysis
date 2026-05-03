@@ -231,6 +231,22 @@ Translation mappings established:
    all charts with y-axis titles. Override to l:185 for SHAP charts with
    long feature name labels on the y-axis.
 
+5. **base_layout showlegend override** -- base_layout includes showlegend=False
+   as one of its 5 required keys. Passing showlegend=True as a separate keyword
+   argument alongside **base_layout raises: "update_layout() got multiple values
+   for keyword argument 'showlegend'". Fix: merge the override into the dict
+   spread before unpacking: **{**base_layout, "showlegend": True}. Apply this
+   pattern any time a base_layout key needs to be overridden at the call site.
+
+6. **add_vline on categorical x-axis** -- Plotly's add_vline() requires a
+   numeric x value. When the x-axis is categorical (e.g., cohort quarter strings
+   like "2023Q3"), add_vline raises "unsupported operand type(s) for +: 'int'
+   and 'str'" because it tries to compute a numeric mean to position the
+   annotation. Fix: use add_shape(type="line", xref="x", x0=category,
+   x1=category, y0=0, y1=1, yref="paper") for the line and add_annotation()
+   for the label. This pattern applies to any vertical reference line on a
+   time-series or cohort chart that uses string category labels on the x-axis.
+
 ---
 
 *Pattern Log version 1.0 -- waypoint-retention-analytics*

@@ -1,0 +1,144 @@
+{
+  "test_auc": 0.6135,
+  "cv_auc_mean": 0.6087,
+  "cv_auc_std": 0.007,
+  "test_accuracy": 0.7475,
+  "precision_0": 0.4724,
+  "recall_0": 0.0203,
+  "precision_1": 0.7505,
+  "recall_1": 0.9924,
+  "f1_macro": 0.4468,
+  "confusion_matrix": {
+    "TN": 77,
+    "FP": 3722,
+    "FN": 86,
+    "TP": 11194
+  },
+  "test_n": 15079,
+  "train_n": 45002,
+  "decile_table": [
+    {
+      "decile": 1,
+      "policy_count": 1508,
+      "lapse_count": 603,
+      "lapse_rate": 0.3999,
+      "avg_lapse_prob": 0.43140000104904175,
+      "lift_vs_baseline": 1.587,
+      "cumulative_gain_pct": 15.87
+    },
+    {
+      "decile": 2,
+      "policy_count": 1508,
+      "lapse_count": 470,
+      "lapse_rate": 0.3117,
+      "avg_lapse_prob": 0.3393000066280365,
+      "lift_vs_baseline": 1.237,
+      "cumulative_gain_pct": 28.24
+    },
+    {
+      "decile": 3,
+      "policy_count": 1508,
+      "lapse_count": 477,
+      "lapse_rate": 0.3163,
+      "avg_lapse_prob": 0.3021000027656555,
+      "lift_vs_baseline": 1.255,
+      "cumulative_gain_pct": 40.8
+    },
+    {
+      "decile": 4,
+      "policy_count": 1508,
+      "lapse_count": 405,
+      "lapse_rate": 0.2686,
+      "avg_lapse_prob": 0.27559998631477356,
+      "lift_vs_baseline": 1.066,
+      "cumulative_gain_pct": 51.46
+    },
+    {
+      "decile": 5,
+      "policy_count": 1508,
+      "lapse_count": 429,
+      "lapse_rate": 0.2845,
+      "avg_lapse_prob": 0.25099998712539673,
+      "lift_vs_baseline": 1.129,
+      "cumulative_gain_pct": 62.75
+    },
+    {
+      "decile": 6,
+      "policy_count": 1507,
+      "lapse_count": 323,
+      "lapse_rate": 0.2143,
+      "avg_lapse_prob": 0.22920000553131104,
+      "lift_vs_baseline": 0.851,
+      "cumulative_gain_pct": 71.26
+    },
+    {
+      "decile": 7,
+      "policy_count": 1508,
+      "lapse_count": 342,
+      "lapse_rate": 0.2268,
+      "avg_lapse_prob": 0.20999999344348907,
+      "lift_vs_baseline": 0.9,
+      "cumulative_gain_pct": 80.26
+    },
+    {
+      "decile": 8,
+      "policy_count": 1508,
+      "lapse_count": 312,
+      "lapse_rate": 0.2069,
+      "avg_lapse_prob": 0.18970000743865967,
+      "lift_vs_baseline": 0.821,
+      "cumulative_gain_pct": 88.47
+    },
+    {
+      "decile": 9,
+      "policy_count": 1508,
+      "lapse_count": 245,
+      "lapse_rate": 0.1625,
+      "avg_lapse_prob": 0.1655000001192093,
+      "lift_vs_baseline": 0.645,
+      "cumulative_gain_pct": 94.92
+    },
+    {
+      "decile": 10,
+      "policy_count": 1508,
+      "lapse_count": 193,
+      "lapse_rate": 0.128,
+      "avg_lapse_prob": 0.12620000541210175,
+      "lift_vs_baseline": 0.508,
+      "cumulative_gain_pct": 100.0
+    }
+  ],
+  "feature_count": 29,
+  "feature_names": [
+    "age_band",
+    "state",
+    "metro_area",
+    "homeowner_flag",
+    "prior_insurance_flag",
+    "years_with_carrier",
+    "acquisition_channel",
+    "agency_type",
+    "aqx_assisted_flag",
+    "policy_type",
+    "coverage_tier",
+    "annual_premium",
+    "cohort_quarter",
+    "tenure_months",
+    "multi_product_flag",
+    "renters_quoted_flag",
+    "renters_attached_flag",
+    "payment_method",
+    "billing_frequency",
+    "missed_payment_count",
+    "days_past_due_max",
+    "payment_consistency",
+    "nsf_flag",
+    "late_pay_flag_3mo",
+    "has_claim_12mo",
+    "claim_count_12mo",
+    "total_claim_amount",
+    "claim_severity_band",
+    "days_since_last_claim"
+  ],
+  "high_risk_pct": 0.2
+}

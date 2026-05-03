@@ -122,7 +122,7 @@ def find_project_root() -> Path:
 
 
 PROJECT_ROOT = find_project_root()
-OUTPUTS_DIR  = PROJECT_ROOT / "_build" / "workflows" / "04_modeling" / "outputs"
+OUTPUTS_DIR  = PROJECT_ROOT / "data"   # scored CSV, SHAP, and model metrics live here for deployment
 
 # --------------------------------------------------------------------------- #
 # Data loading                                                                 #
